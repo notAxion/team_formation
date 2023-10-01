@@ -88,7 +88,6 @@ class _SearchTeamsState extends State<SearchTeams> {
         margin: EdgeInsets.only(left: 16.0),
         padding: EdgeInsets.all(13.0),
         decoration: BoxDecoration(
-          color: Colors.indigo.shade700,
           shape: BoxShape.circle,
         ),
         child: Text("${team.gender.characters.first.toUpperCase()}"),
