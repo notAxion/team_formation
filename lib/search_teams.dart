@@ -12,6 +12,8 @@ class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
   List<TeamModel>? teams;
 
+  late List<bool> seletctedTeam;
+
   @override
   void initState() {
     TeamModel.getFromJson(
@@ -20,6 +22,7 @@ class _SearchTeamsState extends State<SearchTeams> {
       setState(() {
         teams = value;
       });
+      seletctedTeam = List.filled(teams?.length ?? 0, false);
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
     });
@@ -66,12 +69,37 @@ class _SearchTeamsState extends State<SearchTeams> {
       child: ListView.builder(
         itemCount: teams?.length ?? 0,
         itemBuilder: (context, index) {
-          final TeamModel team = teams?[index] ?? TeamModel.errorModel();
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text("${team.id} ${team.firstName}"),
-          );
+          return _TeamCard(index);
         },
+      ),
+    );
+  }
+
+  Widget _TeamCard(int index) {
+    final TeamModel team = teams?[index] ?? TeamModel.errorModel();
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        margin: EdgeInsets.only(left: 16.0),
+        padding: EdgeInsets.all(13.0),
+        decoration: BoxDecoration(
+          color: Colors.indigo.shade700,
+          shape: BoxShape.circle,
+        ),
+        child: Text("${team.gender.characters.first.toUpperCase()}"),
+      ),
+      selected: seletctedTeam[index],
+      title: Text("${team.firstName} ${team.lastName}"),
+      subtitle: Text(team.email),
+      trailing: Checkbox(
+        onChanged: (value) {
+          if (value != null) {
+            setState(() {
+              seletctedTeam[index] = value;
+            });
+          }
+        },
+        value: seletctedTeam[index],
       ),
     );
   }
