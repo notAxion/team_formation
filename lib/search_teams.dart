@@ -14,6 +14,8 @@ class _SearchTeamsState extends State<SearchTeams> {
 
   late List<bool> seletctedTeam;
 
+  int selectionCounter = 0;
+
   @override
   void initState() {
     TeamModel.getFromJson(
@@ -41,6 +43,7 @@ class _SearchTeamsState extends State<SearchTeams> {
           children: [
             _searchBar(),
             _showTeamList(),
+            _showOnSelection(),
           ],
         ),
       ),
@@ -98,11 +101,54 @@ class _SearchTeamsState extends State<SearchTeams> {
             setState(() {
               seletctedTeam[index] = value;
             });
+            if (seletctedTeam[index]) {
+              setState(() {
+                selectionCounter++;
+              });
+            } else {
+              setState(() {
+                selectionCounter--;
+              });
+            }
           }
         },
         value: seletctedTeam[index],
         activeColor: Theme.of(context).focusColor,
       ),
     );
+  }
+
+  Widget _showOnSelection() {
+    if ((selectionCounter < 1)) {
+      return const SizedBox.shrink();
+    } else {
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        // padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).primaryColor),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          minVerticalPadding: 0,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text("$selectionCounter selected"),
+          ),
+          trailing: FilledButton(
+            style: ElevatedButton.styleFrom(
+              shape: CircleBorder(),
+              padding: EdgeInsets.all(10),
+            ),
+            child: Icon(
+              Icons.arrow_forward_ios_sharp,
+              size: 25,
+            ),
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
   }
 }
