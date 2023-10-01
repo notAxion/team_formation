@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:team_formation/models/team_model.dart';
+import 'package:team_formation/team_overview.dart';
 
 class SearchTeams extends StatefulWidget {
   SearchTeams({super.key});
@@ -145,7 +146,27 @@ class _SearchTeamsState extends State<SearchTeams> {
               Icons.arrow_forward_ios_sharp,
               size: 25,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    if (teams != null) {
+                      final List<TeamModel> selectedTeams = List.from(
+                        teams!.where(
+                          (team) => seletctedTeam[teams!.indexOf(team)],
+                        ),
+                      );
+                      return TeamOverview(
+                        selectedTeams: selectedTeams,
+                      );
+                    } else {
+                      throw "unexpected";
+                    }
+                  },
+                ),
+              );
+            },
           ),
         ),
       );
