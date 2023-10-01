@@ -78,6 +78,7 @@ class _SearchTeamsState extends State<SearchTeams> {
   Widget _TeamCard(int index) {
     final TeamModel team = teams?[index] ?? TeamModel.errorModel();
     return ListTile(
+      selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
       contentPadding: EdgeInsets.zero,
       leading: Container(
         margin: EdgeInsets.only(left: 16.0),
@@ -100,6 +101,7 @@ class _SearchTeamsState extends State<SearchTeams> {
           }
         },
         value: seletctedTeam[index],
+        activeColor: Theme.of(context).focusColor,
       ),
     );
   }
