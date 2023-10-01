@@ -12,6 +12,7 @@ class SearchTeams extends StatefulWidget {
 class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
   List<TeamModel>? teams;
+  late final List<TeamModel> allTeams;
 
   late List<bool> seletctedTeam;
 
@@ -25,6 +26,7 @@ class _SearchTeamsState extends State<SearchTeams> {
       setState(() {
         teams = value;
       });
+      allTeams = teams!;
       seletctedTeam = List.filled(teams?.length ?? 0, false);
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
@@ -55,7 +57,7 @@ class _SearchTeamsState extends State<SearchTeams> {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: TextField(
-        onChanged: (value) {},
+        onChanged: filterByName,
         controller: editingController,
         decoration: InputDecoration(
           labelText: "Search",
@@ -66,6 +68,18 @@ class _SearchTeamsState extends State<SearchTeams> {
         ),
       ),
     );
+  }
+
+  void filterByName(String query) {
+    setState(() {
+      teams = allTeams
+          .where(
+            (item) =>
+                item.firstName.toLowerCase().contains(query.toLowerCase()) |
+                item.lastName.toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList();
+    });
   }
 
   Widget _showTeamList() {
@@ -84,6 +98,7 @@ class _SearchTeamsState extends State<SearchTeams> {
     return ListTile(
       selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
       contentPadding: EdgeInsets.zero,
+      isThreeLine: true,
       leading: Container(
         margin: EdgeInsets.only(left: 16.0),
         padding: EdgeInsets.all(13.0),
@@ -94,7 +109,7 @@ class _SearchTeamsState extends State<SearchTeams> {
       ),
       selected: seletctedTeam[index],
       title: Text("${team.firstName} ${team.lastName}"),
-      subtitle: Text(team.email),
+      subtitle: Text("${team.email}\n${team.domain}, ${team.available}"),
       trailing: Checkbox(
         onChanged: (value) {
           if (value != null) {
