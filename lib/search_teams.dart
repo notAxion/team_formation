@@ -61,7 +61,9 @@ class _SearchTeamsState extends State<SearchTeams> {
         child: Column(
           children: [
             _searchBar(),
+            Divider(color: Colors.grey),
             _searchFilters(),
+            Divider(color: Colors.grey),
             _showTeamList(),
             _showOnSelection(),
           ],
@@ -115,7 +117,7 @@ class _SearchTeamsState extends State<SearchTeams> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _domainDropDown(domainEntries),
           _genderDropDown(genderEntries),
