@@ -16,7 +16,7 @@ class _SearchTeamsState extends State<SearchTeams> {
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
-  Map<int, bool> TeamAdded = <int, bool>{};
+  Map<int, bool> teamAdded = <int, bool>{};
 
   int selectionCounter = 0;
 
@@ -46,7 +46,7 @@ class _SearchTeamsState extends State<SearchTeams> {
   /// sets all the value of the [teamAdded] value to false
   emptyTeamAdded(List<TeamModel> allTeams) {
     for (final team in allTeams) {
-      TeamAdded[team.id] = false;
+      teamAdded[team.id] = false;
     }
   }
 
@@ -230,31 +230,10 @@ class _SearchTeamsState extends State<SearchTeams> {
               ),
               child: Text(team.gender.sexuality.characters.first.toUpperCase()),
             ),
-            selected: TeamAdded[team.id]!,
+            selected: teamAdded[team.id]!,
             title: Text("${team.firstName} ${team.lastName}"),
             subtitle: Text(
                 "${team.email}\n${team.domain.domainName}, ${team.available}"),
-            trailing: Checkbox(
-              onChanged: (!team.available)
-                  ? null
-                  : (value) {
-                      if (value != null) {
-                        setState(() {
-                          TeamAdded[team.id] = value;
-                        });
-                        if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
-                          setState(() {
-                            selectionCounter++;
-                          });
-                        } else {
-                          setState(() {
-                            selectionCounter--;
-                          });
-                        }
-                      }
-                    },
-              value: TeamAdded[team.id],
-            ),
           ),
           _addToTeamButton(team),
         ],
@@ -267,8 +246,26 @@ class _SearchTeamsState extends State<SearchTeams> {
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       alignment: Alignment.centerRight,
       child: FilledButton(
-        child: const Text("Add To Team"),
-        onPressed: () {},
+        onPressed: (!team.available)
+            ? null
+            : () {
+                setState(() {
+                  teamAdded[team.id] = !teamAdded[team.id]!;
+                });
+                if (teamAdded[team.id] != null && teamAdded[team.id]!) {
+                  setState(() {
+                    selectionCounter++;
+                  });
+                } else {
+                  setState(() {
+                    selectionCounter--;
+                  });
+                }
+              },
+        // TODO add an not available text
+        child: (!teamAdded[team.id]!)
+            ? const Text("Add To Team")
+            : const Text("Remove From Team"),
       ),
     );
   }
@@ -310,7 +307,7 @@ class _SearchTeamsState extends State<SearchTeams> {
                     if (teams != null) {
                       final List<TeamModel> selectedTeams = List.from(
                         teams!.where(
-                          (team) => TeamAdded[team.id]!,
+                          (team) => teamAdded[team.id]!,
                         ),
                       );
                       return TeamOverview(
