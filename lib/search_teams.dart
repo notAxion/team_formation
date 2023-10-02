@@ -223,8 +223,7 @@ class _SearchTeamsState extends State<SearchTeams> {
                   textScaleFactor: 1.4,
                 ),
               ),
-              subtitle: Text(
-                  "${team.email}\n${team.domain.domainName}, ${team.available}"),
+              subtitle: Text("${team.email}\n${team.domain.domainName}"),
             ),
             _addToTeamButton(team, teamAdded[team.id]!),
           ],
@@ -237,18 +236,21 @@ class _SearchTeamsState extends State<SearchTeams> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       alignment: Alignment.centerRight,
-      child: FilledButton(
-        onPressed: (!team.available)
-            ? null
-            : () {
+      child: (!team.available)
+          ? const FilledButton(
+              onPressed: null,
+              child: Text("Not Available"),
+            )
+          : FilledButton(
+              onPressed: () {
                 StoreProvider.of<AppState>(context)
                     .dispatch(AddToTeam(team.id));
               },
-        // TODO add an not available text
-        child: (!isSelected)
-            ? const Text("Add To Team")
-            : const Text("Remove From Team"),
-      ),
+              // TODO add an not available text
+              child: (!isSelected)
+                  ? const Text("Add To Team")
+                  : const Text("Remove From Team"),
+            ),
     );
   }
 
