@@ -53,6 +53,7 @@ class TeamModel {
 
 @JsonEnum(valueField: 'domainName')
 enum Domain {
+  none("None"),
   sales("Sales"),
   finance("Finance"),
   marketing("Marketing"),
@@ -68,6 +69,7 @@ enum Domain {
 
 @JsonEnum(valueField: 'sexuality')
 enum Gender {
+  none("None"),
   female("Female"),
   male("Male"),
   agender("Agender"),

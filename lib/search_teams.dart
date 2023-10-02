@@ -11,13 +11,18 @@ class SearchTeams extends StatefulWidget {
 
 class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
-  String? selectedDomain, selectedGender;
+  Domain selectedDomain = Domain.none;
+  Gender selectedGender = Gender.none;
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
   late List<bool> seletctedTeam;
 
   int selectionCounter = 0;
+
+  final _domainController = TextEditingController();
+
+  final _genderController = TextEditingController();
 
   @override
   void initState() {
@@ -114,11 +119,17 @@ class _SearchTeamsState extends State<SearchTeams> {
       label: Text("Domain"),
       width: 150,
       enableSearch: false,
+      controller: _domainController,
       textStyle: TextStyle(overflow: TextOverflow.ellipsis),
       dropdownMenuEntries: domainEntries,
       onSelected: (value) {
         if (value != null) {
-          filterByDomain(value);
+          selectedDomain = value;
+          if (value == Domain.none) {
+            _domainController.clear();
+          }
+          filter();
+          FocusScope.of(context).unfocus();
         }
       },
     );
@@ -129,25 +140,31 @@ class _SearchTeamsState extends State<SearchTeams> {
       width: 150,
       label: Text("Gender"),
       enableSearch: false,
+      controller: _genderController,
       textStyle: TextStyle(overflow: TextOverflow.ellipsis),
       dropdownMenuEntries: genderEntries,
       onSelected: (value) {
         if (value != null) {
-          filterByGender(value);
+          selectedGender = value;
+          if (value == Gender.none) {
+            _genderController.clear();
+          }
+          filter();
+          FocusScope.of(context).unfocus();
         }
       },
     );
   }
 
-  void filterByDomain(Domain domain) {
+  void filter() {
+    teams = (selectedDomain == Domain.none)
+        ? allTeams
+        : allTeams.where((team) => team.domain == selectedDomain).toList();
+    teams = (selectedGender == Gender.none)
+        ? teams
+        : teams?.where((team) => team.gender == selectedGender).toList();
     setState(() {
-      teams = allTeams.where((team) => team.domain == domain).toList();
-    });
-  }
-
-  void filterByGender(Gender gender) {
-    setState(() {
-      teams = allTeams.where((team) => team.gender == gender).toList();
+      teams = teams;
     });
   }
 
