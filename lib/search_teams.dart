@@ -176,7 +176,9 @@ class _SearchTeamsState extends State<SearchTeams> {
     teams = (selectedGender == Gender.none)
         ? teams
         : teams?.where((team) => team.gender == selectedGender).toList();
-    teams = teams?.where((team) => team.available == _avaliableFilter).toList();
+    teams = (_avaliableFilter == false)
+        ? teams
+        : teams?.where((team) => team.available == _avaliableFilter).toList();
     setState(() {
       teams = teams;
     });
