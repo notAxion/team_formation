@@ -199,13 +199,13 @@ class _SearchTeamsState extends State<SearchTeams> {
       child: ListView.builder(
         itemCount: teams?.length ?? 0,
         itemBuilder: (context, index) {
-          return _TeamCard(index);
+          return _teamCard(index);
         },
       ),
     );
   }
 
-  Widget _TeamCard(int index) {
+  Widget _teamCard(int index) {
     final TeamModel team = teams?[index] ?? TeamModel.errorModel();
     return ListTile(
       selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
