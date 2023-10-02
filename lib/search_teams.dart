@@ -16,7 +16,7 @@ class _SearchTeamsState extends State<SearchTeams> {
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
-  late List<bool> seletctedTeam;
+  Map<int, bool> TeamAdded = <int, bool>{};
 
   int selectionCounter = 0;
 
@@ -31,15 +31,23 @@ class _SearchTeamsState extends State<SearchTeams> {
     TeamModel.getFromJson(
       'assets/heliverse_mock_data.json',
     ).then((value) {
-      setState(() {
-        teams = value;
-      });
+      teams = value;
       allTeams = teams!;
-      seletctedTeam = List.filled(teams?.length ?? 0, false);
+      emptyTeamAdded(allTeams);
+      setState(() {
+        teams = teams;
+      });
     }).onError((error, stackTrace) {
       debugPrint(error.toString());
     });
     super.initState();
+  }
+
+  /// sets all the value of the [teamAdded] value to false
+  emptyTeamAdded(List<TeamModel> allTeams) {
+    for (final team in allTeams) {
+      TeamAdded[team.id] = false;
+    }
   }
 
   @override
@@ -209,7 +217,7 @@ class _SearchTeamsState extends State<SearchTeams> {
         ),
         child: Text(team.gender.sexuality.characters.first.toUpperCase()),
       ),
-      selected: seletctedTeam[index],
+      selected: TeamAdded[team.id]!,
       title: Text("${team.firstName} ${team.lastName}"),
       subtitle:
           Text("${team.email}\n${team.domain.domainName}, ${team.available}"),
@@ -217,9 +225,9 @@ class _SearchTeamsState extends State<SearchTeams> {
         onChanged: (value) {
           if (value != null) {
             setState(() {
-              seletctedTeam[index] = value;
+              TeamAdded[team.id] = value;
             });
-            if (seletctedTeam[index]) {
+            if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
               setState(() {
                 selectionCounter++;
               });
@@ -230,7 +238,7 @@ class _SearchTeamsState extends State<SearchTeams> {
             }
           }
         },
-        value: seletctedTeam[index],
+        value: TeamAdded[team.id],
       ),
     );
   }
@@ -247,6 +255,8 @@ class _SearchTeamsState extends State<SearchTeams> {
           borderRadius: BorderRadius.circular(30),
         ),
         child: ListTile(
+          // TODO add a clear all team added button
+          // leading:
           contentPadding: EdgeInsets.zero,
           minVerticalPadding: 0,
           title: Padding(
@@ -270,7 +280,7 @@ class _SearchTeamsState extends State<SearchTeams> {
                     if (teams != null) {
                       final List<TeamModel> selectedTeams = List.from(
                         teams!.where(
-                          (team) => seletctedTeam[teams!.indexOf(team)],
+                          (team) => TeamAdded[team.id]!,
                         ),
                       );
                       return TeamOverview(
