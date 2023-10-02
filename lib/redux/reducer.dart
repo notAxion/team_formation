@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:team_formation/models/team_model.dart';
 import 'package:team_formation/redux/actions.dart';
 import 'package:team_formation/redux/app_state.dart';
@@ -29,5 +26,52 @@ AppState appReducer(AppState state, action) {
     );
   }
 
+  if (action is ChangeFilterDomain) {
+    final teams = teamsWithAppliedFilter(state.copyWith(
+      selectedDomain: action.domain,
+    ));
+
+    return state.copyWith(
+      teams: teams,
+      selectedDomain: action.domain,
+    );
+  }
+  if (action is ChangeFilterGender) {
+    final teams = teamsWithAppliedFilter(state.copyWith(
+      selectedGender: action.gender,
+    ));
+
+    return state.copyWith(
+      teams: teams,
+      selectedGender: action.gender,
+    );
+  }
+  if (action is AddAvailableFilter) {
+    final teams = teamsWithAppliedFilter(state.copyWith(
+      availableFilter: action.availableFilter,
+    ));
+
+    return state.copyWith(
+      teams: teams,
+      availableFilter: action.availableFilter,
+    );
+  }
+
   return state;
+}
+
+List<TeamModel> teamsWithAppliedFilter(AppState state) {
+  List<TeamModel> teams = (state.selectedDomain == Domain.none)
+      ? state.allTeams
+      : state.allTeams
+          .where((team) => team.domain == state.selectedDomain)
+          .toList();
+  teams = (state.selectedGender == Gender.none)
+      ? teams
+      : teams.where((team) => team.gender == state.selectedGender).toList();
+  teams = (state.availableFilter == false)
+      ? teams
+      : teams.where((team) => team.available == state.availableFilter).toList();
+
+  return teams;
 }

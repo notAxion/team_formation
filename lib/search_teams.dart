@@ -15,8 +15,6 @@ class SearchTeams extends StatefulWidget {
 
 class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
-  Domain selectedDomain = Domain.none;
-  Gender selectedGender = Gender.none;
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
@@ -27,8 +25,6 @@ class _SearchTeamsState extends State<SearchTeams> {
   final _domainController = TextEditingController();
 
   final _genderController = TextEditingController();
-
-  bool _avaliableFilter = false;
 
   @override
   void initState() {
@@ -126,70 +122,66 @@ class _SearchTeamsState extends State<SearchTeams> {
   }
 
   Widget _domainDropDown(List<DropdownMenuEntry<Domain>> domainEntries) {
-    return DropdownMenu<Domain>(
-      label: Text("Domain"),
-      width: 150,
-      enableSearch: false,
-      controller: _domainController,
-      textStyle: TextStyle(overflow: TextOverflow.ellipsis),
-      dropdownMenuEntries: domainEntries,
-      onSelected: (value) {
-        if (value != null) {
-          selectedDomain = value;
-          if (value == Domain.none) {
-            _domainController.clear();
+    return StoreConnector<AppState, Domain>(
+      converter: (store) => store.state.selectedDomain,
+      builder: (context, selectedDomain) => DropdownMenu<Domain>(
+        label: Text("Domain"),
+        width: 150,
+        enableSearch: false,
+        controller: _domainController,
+        textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+        dropdownMenuEntries: domainEntries,
+        onSelected: (changedDomain) {
+          if (changedDomain != null) {
+            StoreProvider.of<AppState>(context)
+                .dispatch(ChangeFilterDomain(changedDomain));
+            if (changedDomain == Domain.none) {
+              _domainController.clear();
+            }
+            FocusScope.of(context).unfocus();
           }
-          filter();
-          FocusScope.of(context).unfocus();
-        }
-      },
+        },
+      ),
     );
   }
 
   Widget _genderDropDown(List<DropdownMenuEntry<Gender>> genderEntries) {
-    return DropdownMenu(
-      width: 150,
-      label: Text("Gender"),
-      enableSearch: false,
-      controller: _genderController,
-      textStyle: TextStyle(overflow: TextOverflow.ellipsis),
-      dropdownMenuEntries: genderEntries,
-      onSelected: (value) {
-        if (value != null) {
-          selectedGender = value;
-          if (value == Gender.none) {
-            _genderController.clear();
+    return StoreConnector<AppState, Gender>(
+      converter: (store) => store.state.selectedGender,
+      builder: (context, selectedGender) => DropdownMenu(
+        width: 150,
+        label: Text("Gender"),
+        enableSearch: false,
+        controller: _genderController,
+        textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+        dropdownMenuEntries: genderEntries,
+        onSelected: (changedGender) {
+          if (changedGender != null) {
+            StoreProvider.of<AppState>(context)
+                .dispatch(ChangeFilterGender(changedGender));
+            if (changedGender == Gender.none) {
+              _genderController.clear();
+            }
+            FocusScope.of(context).unfocus();
           }
-          filter();
-          FocusScope.of(context).unfocus();
-        }
-      },
+        },
+      ),
     );
   }
 
   Widget _availableCheckBox() {
-    return Checkbox(
-      value: _avaliableFilter,
-      onChanged: (_) {
-        _avaliableFilter = !_avaliableFilter;
-        filter();
-      },
+    return StoreConnector<AppState, bool>(
+      converter: (store) => store.state.availableFilter,
+      builder: (context, availableFilter) => Checkbox(
+        value: availableFilter,
+        onChanged: (changedAvailableFilter) {
+          if (changedAvailableFilter != null) {
+            StoreProvider.of<AppState>(context)
+                .dispatch(AddAvailableFilter(changedAvailableFilter));
+          }
+        },
+      ),
     );
-  }
-
-  void filter() {
-    teams = (selectedDomain == Domain.none)
-        ? allTeams
-        : allTeams.where((team) => team.domain == selectedDomain).toList();
-    teams = (selectedGender == Gender.none)
-        ? teams
-        : teams?.where((team) => team.gender == selectedGender).toList();
-    teams = (_avaliableFilter == false)
-        ? teams
-        : teams?.where((team) => team.available == _avaliableFilter).toList();
-    setState(() {
-      teams = teams;
-    });
   }
 
   Widget _showTeamList() {

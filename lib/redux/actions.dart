@@ -11,3 +11,20 @@ class SetTeams {
 
   SetTeams(this.teams);
 }
+
+class ChangeFilterDomain {
+  Domain domain;
+  ChangeFilterDomain(this.domain);
+}
+
+class ChangeFilterGender {
+  Gender gender;
+  ChangeFilterGender(this.gender);
+}
+
+class AddAvailableFilter {
+  bool availableFilter;
+  AddAvailableFilter(this.availableFilter);
+}
+
+class ApplyFilter {}
