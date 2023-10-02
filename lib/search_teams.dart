@@ -224,22 +224,24 @@ class _SearchTeamsState extends State<SearchTeams> {
       subtitle:
           Text("${team.email}\n${team.domain.domainName}, ${team.available}"),
       trailing: Checkbox(
-        onChanged: (value) {
-          if (value != null) {
-            setState(() {
-              TeamAdded[team.id] = value;
-            });
-            if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
-              setState(() {
-                selectionCounter++;
-              });
-            } else {
-              setState(() {
-                selectionCounter--;
-              });
-            }
-          }
-        },
+        onChanged: (!team.available)
+            ? null
+            : (value) {
+                if (value != null) {
+                  setState(() {
+                    TeamAdded[team.id] = value;
+                  });
+                  if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
+                    setState(() {
+                      selectionCounter++;
+                    });
+                  } else {
+                    setState(() {
+                      selectionCounter--;
+                    });
+                  }
+                }
+              },
         value: TeamAdded[team.id],
       ),
     );
