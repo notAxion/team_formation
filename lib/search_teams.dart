@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:team_formation/models/team_model.dart';
+import 'package:team_formation/redux/actions.dart';
+import 'package:team_formation/redux/app_state.dart';
 import 'package:team_formation/team_overview.dart';
+import 'package:redux/redux.dart';
 
 class SearchTeams extends StatefulWidget {
   SearchTeams({super.key});
@@ -61,9 +65,14 @@ class _SearchTeamsState extends State<SearchTeams> {
         child: Column(
           children: [
             _searchBar(),
-            Divider(),
-            _searchFilters(),
-            Divider(),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Divider(),
+                _searchFilters(),
+                Divider(),
+              ],
+            ),
             _showTeamList(),
             _showOnSelection(),
           ],
@@ -76,9 +85,10 @@ class _SearchTeamsState extends State<SearchTeams> {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: TextField(
-        onChanged: filterByName,
+        onChanged: (value) =>
+            StoreProvider.of<AppState>(context).dispatch(SearchName(value)),
         controller: editingController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: "Search",
           hintText: "Search",
           border: OutlineInputBorder(
@@ -87,18 +97,6 @@ class _SearchTeamsState extends State<SearchTeams> {
         ),
       ),
     );
-  }
-
-  void filterByName(String query) {
-    setState(() {
-      teams = allTeams
-          .where(
-            (item) =>
-                item.firstName.toLowerCase().contains(query.toLowerCase()) |
-                item.lastName.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
-    });
   }
 
   Widget _searchFilters() {
@@ -195,18 +193,21 @@ class _SearchTeamsState extends State<SearchTeams> {
   }
 
   Widget _showTeamList() {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: teams?.length ?? 0,
-        itemBuilder: (context, index) {
-          return _teamCard(index);
-        },
+    return StoreConnector<AppState, List<TeamModel>>(
+      converter: (store) => store.state.teams,
+      builder: (BuildContext context, List<TeamModel> teams) => Expanded(
+        child: ListView.builder(
+          itemCount: teams.length,
+          itemBuilder: (context, index) {
+            return _teamCard(teams[index]);
+          },
+        ),
       ),
     );
   }
 
-  Widget _teamCard(int index) {
-    final TeamModel team = teams?[index] ?? TeamModel.errorModel();
+  Widget _teamCard(TeamModel team) {
+    // final TeamModel team = teams?[index] ?? TeamModel.errorModel();
     return Card(
       shape: RoundedRectangleBorder(
         side: BorderSide(
