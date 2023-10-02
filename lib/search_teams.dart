@@ -216,7 +216,13 @@ class _SearchTeamsState extends State<SearchTeams> {
                     Text(team.gender.sexuality.characters.first.toUpperCase()),
               ),
               selected: teamAdded[team.id]!,
-              title: Text("${team.firstName} ${team.lastName}"),
+              title: Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                child: Text(
+                  "${team.firstName} ${team.lastName}",
+                  textScaleFactor: 1.4,
+                ),
+              ),
               subtitle: Text(
                   "${team.email}\n${team.domain.domainName}, ${team.available}"),
             ),
@@ -252,8 +258,8 @@ class _SearchTeamsState extends State<SearchTeams> {
       builder: (context, selectionCounter) => (selectionCounter < 1)
           ? const SizedBox.shrink()
           : Container(
-              margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              // padding: EdgeInsets.all(16.0),
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Theme.of(context).primaryColor),
                 borderRadius: BorderRadius.circular(30),
@@ -279,11 +285,7 @@ class _SearchTeamsState extends State<SearchTeams> {
                 ),
                 contentPadding: EdgeInsets.zero,
                 minVerticalPadding: 0,
-                title: Padding(
-                  // padding: const EdgeInsets.only(left: 16.0),
-                  padding: EdgeInsets.zero,
-                  child: Text("$selectionCounter selected"),
-                ),
+                title: Text("$selectionCounter selected"),
                 trailing: StoreConnector<AppState, Map<int, bool>>(
                   converter: (store) => store.state.teamAdded,
                   builder: (context, teamAdded) => FilledButton(
