@@ -11,6 +11,7 @@ class SearchTeams extends StatefulWidget {
 
 class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
+  String? selectedDomain, selectedGender;
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
@@ -45,6 +46,7 @@ class _SearchTeamsState extends State<SearchTeams> {
         child: Column(
           children: [
             _searchBar(),
+            _searchFilters(),
             _showTeamList(),
             _showOnSelection(),
           ],
@@ -82,6 +84,73 @@ class _SearchTeamsState extends State<SearchTeams> {
     });
   }
 
+  Widget _searchFilters() {
+    final domainEntries = <DropdownMenuEntry<Domain>>[];
+    for (final Domain domain in Domain.values) {
+      domainEntries.add(
+        DropdownMenuEntry(value: domain, label: domain.domainName),
+      );
+    }
+    final genderEntries = <DropdownMenuEntry<Gender>>[];
+    for (final Gender gender in Gender.values) {
+      genderEntries.add(
+        DropdownMenuEntry(value: gender, label: gender.sexuality),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _domainDropDown(domainEntries),
+          _genderDropDown(genderEntries),
+        ],
+      ),
+    );
+  }
+
+  Widget _domainDropDown(List<DropdownMenuEntry<Domain>> domainEntries) {
+    return DropdownMenu<Domain>(
+      label: Text("Domain"),
+      width: 150,
+      enableSearch: false,
+      textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+      dropdownMenuEntries: domainEntries,
+      onSelected: (value) {
+        if (value != null) {
+          filterByDomain(value);
+        }
+      },
+    );
+  }
+
+  Widget _genderDropDown(List<DropdownMenuEntry<Gender>> genderEntries) {
+    return DropdownMenu(
+      width: 150,
+      label: Text("Gender"),
+      enableSearch: false,
+      textStyle: TextStyle(overflow: TextOverflow.ellipsis),
+      dropdownMenuEntries: genderEntries,
+      onSelected: (value) {
+        if (value != null) {
+          filterByGender(value);
+        }
+      },
+    );
+  }
+
+  void filterByDomain(Domain domain) {
+    setState(() {
+      teams = allTeams.where((team) => team.domain == domain).toList();
+    });
+  }
+
+  void filterByGender(Gender gender) {
+    setState(() {
+      teams = allTeams.where((team) => team.gender == gender).toList();
+    });
+  }
+
   Widget _showTeamList() {
     return Expanded(
       child: ListView.builder(
@@ -102,14 +171,15 @@ class _SearchTeamsState extends State<SearchTeams> {
       leading: Container(
         margin: EdgeInsets.only(left: 16.0),
         padding: EdgeInsets.all(13.0),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
         ),
-        child: Text("${team.gender.characters.first.toUpperCase()}"),
+        child: Text(team.gender.sexuality.characters.first.toUpperCase()),
       ),
       selected: seletctedTeam[index],
       title: Text("${team.firstName} ${team.lastName}"),
-      subtitle: Text("${team.email}\n${team.domain}, ${team.available}"),
+      subtitle:
+          Text("${team.email}\n${team.domain.domainName}, ${team.available}"),
       trailing: Checkbox(
         onChanged: (value) {
           if (value != null) {

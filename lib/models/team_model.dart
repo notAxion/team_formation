@@ -12,8 +12,9 @@ class TeamModel {
   final String firstName;
   @JsonKey(name: "last_name")
   final String lastName;
-  final String email, gender, avatar;
-  final String domain;
+  final String email, avatar;
+  final Gender gender;
+  final Domain domain;
   final bool available;
 
   TeamModel({
@@ -42,10 +43,41 @@ class TeamModel {
       firstName: "error",
       lastName: "error",
       email: "error",
-      gender: "error",
+      gender: Gender.genderfluid,
       avatar: "error",
-      domain: "error",
+      domain: Domain.it,
       available: false,
     );
   }
+}
+
+@JsonEnum(valueField: 'domainName')
+enum Domain {
+  sales("Sales"),
+  finance("Finance"),
+  marketing("Marketing"),
+  it("IT"),
+  management("Management"),
+  uiDesigning("UI Designing"),
+  businessDevelopment("Business Development");
+
+  const Domain(this.domainName);
+
+  final String domainName;
+}
+
+@JsonEnum(valueField: 'sexuality')
+enum Gender {
+  female("Female"),
+  male("Male"),
+  agender("Agender"),
+  bigender("Bigender"),
+  polygender("Polygender"),
+  nonBinary("Non-binary"),
+  genderfluid("Genderfluid"),
+  genderqueer("Genderqueer");
+
+  const Gender(this.sexuality);
+
+  final String sexuality;
 }
