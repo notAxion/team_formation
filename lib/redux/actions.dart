@@ -34,3 +34,5 @@ class AddToTeam {
 
   AddToTeam(this.id);
 }
+
+class ClearTeamSelection {}

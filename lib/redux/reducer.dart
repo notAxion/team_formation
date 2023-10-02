@@ -68,6 +68,13 @@ AppState appReducer(AppState state, action) {
     );
   }
 
+  if (action is ClearTeamSelection) {
+    return state.copyWith(
+      teamAdded: emptyTeamSelection(state.allTeams),
+      selectionCounter: 0,
+    );
+  }
+
   return state;
 }
 

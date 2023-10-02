@@ -252,19 +252,36 @@ class _SearchTeamsState extends State<SearchTeams> {
       builder: (context, selectionCounter) => (selectionCounter < 1)
           ? const SizedBox.shrink()
           : Container(
-              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               // padding: EdgeInsets.all(16.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Theme.of(context).primaryColor),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ListTile(
-                // TODO add a clear all team added button
-                // leading:
+                leading: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: CircleBorder(),
+                    side: BorderSide(
+                      color: Colors.red,
+                    ),
+                    foregroundColor: Colors.red.shade800,
+                    padding: EdgeInsets.all(10),
+                  ),
+                  child: Icon(
+                    Icons.clear_outlined,
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    StoreProvider.of<AppState>(context)
+                        .dispatch(ClearTeamSelection());
+                  },
+                ),
                 contentPadding: EdgeInsets.zero,
                 minVerticalPadding: 0,
                 title: Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                  // padding: const EdgeInsets.only(left: 16.0),
+                  padding: EdgeInsets.zero,
                   child: Text("$selectionCounter selected"),
                 ),
                 trailing: StoreConnector<AppState, Map<int, bool>>(
