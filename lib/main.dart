@@ -17,6 +17,17 @@ class MyApp extends StatelessWidget {
         textSelectionTheme: TextSelectionThemeData(
           selectionColor: Colors.indigoAccent.shade100,
         ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
+                return Colors.indigo.shade400.withOpacity(.32);
+              }
+              return Colors.indigo.shade400;
+            },
+          ),
+          // activeColor: Theme.of(context).focusColor,
+        ),
         brightness: Brightness.dark,
         primarySwatch: Colors.indigo,
       ),
