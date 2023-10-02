@@ -219,7 +219,6 @@ class _SearchTeamsState extends State<SearchTeams> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
             contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
             isThreeLine: true,
             leading: Container(
