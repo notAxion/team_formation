@@ -23,6 +23,7 @@ AppState appReducer(AppState state, action) {
     return state.copyWith(
       teams: action.teams,
       allTeams: action.teams,
+      teamAdded: emptyTeamSelection(action.teams),
     );
   }
 
@@ -57,6 +58,16 @@ AppState appReducer(AppState state, action) {
     );
   }
 
+  if (action is AddToTeam) {
+    return state.copyWith(
+      teamAdded: state.teamAdded..update(action.id, (value) => !value),
+      selectionCounter:
+          (state.teamAdded[action.id] != null && state.teamAdded[action.id]!)
+              ? state.selectionCounter + 1
+              : state.selectionCounter - 1,
+    );
+  }
+
   return state;
 }
 
@@ -74,4 +85,10 @@ List<TeamModel> teamsWithAppliedFilter(AppState state) {
       : teams.where((team) => team.available == state.availableFilter).toList();
 
   return teams;
+}
+
+Map<int, bool> emptyTeamSelection(List<TeamModel> teams) {
+  return Map.fromEntries(
+    teams.map((t) => MapEntry(t.id, false)),
+  );
 }

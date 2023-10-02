@@ -28,3 +28,9 @@ class AddAvailableFilter {
 }
 
 class ApplyFilter {}
+
+class AddToTeam {
+  final int id;
+
+  AddToTeam(this.id);
+}

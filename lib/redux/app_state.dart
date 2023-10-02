@@ -5,6 +5,8 @@ class AppState {
   Domain selectedDomain;
   Gender selectedGender;
   bool availableFilter;
+  Map<int, bool> teamAdded;
+  int selectionCounter;
 
   AppState({
     this.teams = const [],
@@ -12,6 +14,8 @@ class AppState {
     this.selectedDomain = Domain.none,
     this.selectedGender = Gender.none,
     this.availableFilter = false,
+    this.teamAdded = const <int, bool>{},
+    this.selectionCounter = 0,
   });
 
   AppState copyWith({
@@ -20,6 +24,8 @@ class AppState {
     Domain? selectedDomain,
     Gender? selectedGender,
     bool? availableFilter,
+    Map<int, bool>? teamAdded,
+    int? selectionCounter,
   }) {
     return AppState(
       teams: teams ?? this.teams,
@@ -27,6 +33,8 @@ class AppState {
       selectedDomain: selectedDomain ?? this.selectedDomain,
       selectedGender: selectedGender ?? this.selectedGender,
       availableFilter: availableFilter ?? this.availableFilter,
+      teamAdded: teamAdded ?? this.teamAdded,
+      selectionCounter: selectionCounter ?? this.selectionCounter,
     );
   }
 }

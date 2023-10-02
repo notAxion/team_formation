@@ -18,9 +18,7 @@ class _SearchTeamsState extends State<SearchTeams> {
   List<TeamModel>? teams;
   late final List<TeamModel> allTeams;
 
-  Map<int, bool> teamAdded = <int, bool>{};
-
-  int selectionCounter = 0;
+  // int selectionCounter = 0;
 
   final _domainController = TextEditingController();
 
@@ -33,7 +31,6 @@ class _SearchTeamsState extends State<SearchTeams> {
     ).then((value) {
       teams = value;
       allTeams = teams!;
-      emptyTeamAdded(allTeams);
       setState(() {
         teams = teams;
       });
@@ -41,13 +38,6 @@ class _SearchTeamsState extends State<SearchTeams> {
       debugPrint(error.toString());
     });
     super.initState();
-  }
-
-  /// sets all the value of the [teamAdded] value to false
-  emptyTeamAdded(List<TeamModel> allTeams) {
-    for (final team in allTeams) {
-      teamAdded[team.id] = false;
-    }
   }
 
   @override
@@ -199,42 +189,45 @@ class _SearchTeamsState extends State<SearchTeams> {
   }
 
   Widget _teamCard(TeamModel team) {
-    // final TeamModel team = teams?[index] ?? TeamModel.errorModel();
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      margin: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-            isThreeLine: true,
-            leading: Container(
-              margin: EdgeInsets.only(left: 8.0),
-              padding: EdgeInsets.all(13.0),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.indigo,
-              ),
-              child: Text(team.gender.sexuality.characters.first.toUpperCase()),
-            ),
-            selected: teamAdded[team.id]!,
-            title: Text("${team.firstName} ${team.lastName}"),
-            subtitle: Text(
-                "${team.email}\n${team.domain.domainName}, ${team.available}"),
+    return StoreConnector<AppState, Map<int, bool>>(
+      converter: (store) => store.state.teamAdded,
+      builder: (context, teamAdded) => Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.outline,
           ),
-          _addToTeamButton(team),
-        ],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              isThreeLine: true,
+              leading: Container(
+                margin: EdgeInsets.only(left: 8.0),
+                padding: EdgeInsets.all(13.0),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.indigo,
+                ),
+                child:
+                    Text(team.gender.sexuality.characters.first.toUpperCase()),
+              ),
+              selected: teamAdded[team.id]!,
+              title: Text("${team.firstName} ${team.lastName}"),
+              subtitle: Text(
+                  "${team.email}\n${team.domain.domainName}, ${team.available}"),
+            ),
+            _addToTeamButton(team, teamAdded[team.id]!),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _addToTeamButton(TeamModel team) {
+  Widget _addToTeamButton(TeamModel team, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       alignment: Alignment.centerRight,
@@ -242,21 +235,11 @@ class _SearchTeamsState extends State<SearchTeams> {
         onPressed: (!team.available)
             ? null
             : () {
-                setState(() {
-                  teamAdded[team.id] = !teamAdded[team.id]!;
-                });
-                if (teamAdded[team.id] != null && teamAdded[team.id]!) {
-                  setState(() {
-                    selectionCounter++;
-                  });
-                } else {
-                  setState(() {
-                    selectionCounter--;
-                  });
-                }
+                StoreProvider.of<AppState>(context)
+                    .dispatch(AddToTeam(team.id));
               },
         // TODO add an not available text
-        child: (!teamAdded[team.id]!)
+        child: (!isSelected)
             ? const Text("Add To Team")
             : const Text("Remove From Team"),
       ),
@@ -264,58 +247,62 @@ class _SearchTeamsState extends State<SearchTeams> {
   }
 
   Widget _showOnSelection() {
-    if ((selectionCounter < 1)) {
-      return const SizedBox.shrink();
-    } else {
-      return Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        // padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColor),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: ListTile(
-          // TODO add a clear all team added button
-          // leading:
-          contentPadding: EdgeInsets.zero,
-          minVerticalPadding: 0,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Text("$selectionCounter selected"),
-          ),
-          trailing: FilledButton(
-            style: ElevatedButton.styleFrom(
-              shape: CircleBorder(),
-              padding: EdgeInsets.all(10),
-            ),
-            child: Icon(
-              Icons.arrow_forward_ios_sharp,
-              size: 25,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    if (teams != null) {
-                      final List<TeamModel> selectedTeams = List.from(
-                        teams!.where(
-                          (team) => teamAdded[team.id]!,
+    return StoreConnector<AppState, int>(
+      converter: (store) => store.state.selectionCounter,
+      builder: (context, selectionCounter) => (selectionCounter < 1)
+          ? const SizedBox.shrink()
+          : Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              // padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).primaryColor),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: ListTile(
+                // TODO add a clear all team added button
+                // leading:
+                contentPadding: EdgeInsets.zero,
+                minVerticalPadding: 0,
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text("$selectionCounter selected"),
+                ),
+                trailing: StoreConnector<AppState, Map<int, bool>>(
+                  converter: (store) => store.state.teamAdded,
+                  builder: (context, teamAdded) => FilledButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(10),
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_ios_sharp,
+                      size: 25,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            if (teams != null) {
+                              final List<TeamModel> selectedTeams = List.from(
+                                teams!.where(
+                                  (team) => teamAdded[team.id]!,
+                                ),
+                              );
+                              return TeamOverview(
+                                selectedTeams: selectedTeams,
+                              );
+                            } else {
+                              throw "unexpected";
+                            }
+                          },
                         ),
                       );
-                      return TeamOverview(
-                        selectedTeams: selectedTeams,
-                      );
-                    } else {
-                      throw "unexpected";
-                    }
-                  },
+                    },
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
-      );
-    }
+              ),
+            ),
+    );
   }
 }
