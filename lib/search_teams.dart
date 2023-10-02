@@ -24,6 +24,8 @@ class _SearchTeamsState extends State<SearchTeams> {
 
   final _genderController = TextEditingController();
 
+  bool _avaliableFilter = false;
+
   @override
   void initState() {
     TeamModel.getFromJson(
@@ -109,6 +111,7 @@ class _SearchTeamsState extends State<SearchTeams> {
         children: [
           _domainDropDown(domainEntries),
           _genderDropDown(genderEntries),
+          _availableCheckBox(),
         ],
       ),
     );
@@ -156,6 +159,16 @@ class _SearchTeamsState extends State<SearchTeams> {
     );
   }
 
+  Widget _availableCheckBox() {
+    return Checkbox(
+      value: _avaliableFilter,
+      onChanged: (_) {
+        _avaliableFilter = !_avaliableFilter;
+        filter();
+      },
+    );
+  }
+
   void filter() {
     teams = (selectedDomain == Domain.none)
         ? allTeams
@@ -163,6 +176,7 @@ class _SearchTeamsState extends State<SearchTeams> {
     teams = (selectedGender == Gender.none)
         ? teams
         : teams?.where((team) => team.gender == selectedGender).toList();
+    teams = teams?.where((team) => team.available == _avaliableFilter).toList();
     setState(() {
       teams = teams;
     });
@@ -215,7 +229,6 @@ class _SearchTeamsState extends State<SearchTeams> {
           }
         },
         value: seletctedTeam[index],
-        activeColor: Theme.of(context).focusColor,
       ),
     );
   }
