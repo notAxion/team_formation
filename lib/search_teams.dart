@@ -61,9 +61,9 @@ class _SearchTeamsState extends State<SearchTeams> {
         child: Column(
           children: [
             _searchBar(),
-            Divider(color: Colors.grey),
+            Divider(),
             _searchFilters(),
-            Divider(color: Colors.grey),
+            Divider(),
             _showTeamList(),
             _showOnSelection(),
           ],
@@ -207,42 +207,69 @@ class _SearchTeamsState extends State<SearchTeams> {
 
   Widget _teamCard(int index) {
     final TeamModel team = teams?[index] ?? TeamModel.errorModel();
-    return ListTile(
-      selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
-      contentPadding: EdgeInsets.zero,
-      isThreeLine: true,
-      leading: Container(
-        margin: EdgeInsets.only(left: 16.0),
-        padding: EdgeInsets.all(13.0),
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
+    return Card(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
         ),
-        child: Text(team.gender.sexuality.characters.first.toUpperCase()),
+        borderRadius: BorderRadius.circular(12),
       ),
-      selected: TeamAdded[team.id]!,
-      title: Text("${team.firstName} ${team.lastName}"),
-      subtitle:
-          Text("${team.email}\n${team.domain.domainName}, ${team.available}"),
-      trailing: Checkbox(
-        onChanged: (!team.available)
-            ? null
-            : (value) {
-                if (value != null) {
-                  setState(() {
-                    TeamAdded[team.id] = value;
-                  });
-                  if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
-                    setState(() {
-                      selectionCounter++;
-                    });
-                  } else {
-                    setState(() {
-                      selectionCounter--;
-                    });
-                  }
-                }
-              },
-        value: TeamAdded[team.id],
+      margin: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            selectedColor: Theme.of(context).textSelectionTheme.selectionColor,
+            contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+            isThreeLine: true,
+            leading: Container(
+              margin: EdgeInsets.only(left: 8.0),
+              padding: EdgeInsets.all(13.0),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.indigo,
+              ),
+              child: Text(team.gender.sexuality.characters.first.toUpperCase()),
+            ),
+            selected: TeamAdded[team.id]!,
+            title: Text("${team.firstName} ${team.lastName}"),
+            subtitle: Text(
+                "${team.email}\n${team.domain.domainName}, ${team.available}"),
+            trailing: Checkbox(
+              onChanged: (!team.available)
+                  ? null
+                  : (value) {
+                      if (value != null) {
+                        setState(() {
+                          TeamAdded[team.id] = value;
+                        });
+                        if (TeamAdded[team.id] != null && TeamAdded[team.id]!) {
+                          setState(() {
+                            selectionCounter++;
+                          });
+                        } else {
+                          setState(() {
+                            selectionCounter--;
+                          });
+                        }
+                      }
+                    },
+              value: TeamAdded[team.id],
+            ),
+          ),
+          _addToTeamButton(team),
+        ],
+      ),
+    );
+  }
+
+  Widget _addToTeamButton(TeamModel team) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      alignment: Alignment.centerRight,
+      child: FilledButton(
+        child: const Text("Add To Team"),
+        onPressed: () {},
       ),
     );
   }
