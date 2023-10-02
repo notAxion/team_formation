@@ -14,6 +14,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.indigo,
         textSelectionTheme: TextSelectionThemeData(
           selectionColor: Colors.indigoAccent.shade100,
         ),
@@ -29,7 +31,6 @@ class MyApp extends StatelessWidget {
           // activeColor: Theme.of(context).focusColor,
         ),
         brightness: Brightness.dark,
-        primarySwatch: Colors.indigo,
       ),
       home: SearchTeams(),
     );
