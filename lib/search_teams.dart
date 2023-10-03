@@ -6,7 +6,6 @@ import 'package:team_formation/redux/actions.dart';
 import 'package:team_formation/redux/app_state.dart';
 import 'package:team_formation/team_card.dart';
 import 'package:team_formation/team_overview.dart';
-import 'package:redux/redux.dart';
 
 class SearchTeams extends StatelessWidget {
   SearchTeams({super.key});
