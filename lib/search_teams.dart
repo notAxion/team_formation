@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:team_formation/models/team_model.dart';
+import 'package:team_formation/models/teams_nd_added_member.dart';
 import 'package:team_formation/redux/actions.dart';
 import 'package:team_formation/redux/app_state.dart';
 import 'package:team_formation/team_overview.dart';
@@ -15,30 +16,9 @@ class SearchTeams extends StatefulWidget {
 
 class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
-  List<TeamModel>? teams;
-  late final List<TeamModel> allTeams;
-
-  // int selectionCounter = 0;
-
   final _domainController = TextEditingController();
 
   final _genderController = TextEditingController();
-
-  @override
-  void initState() {
-    TeamModel.getFromJson(
-      'assets/heliverse_mock_data.json',
-    ).then((value) {
-      teams = value;
-      allTeams = teams!;
-      setState(() {
-        teams = teams;
-      });
-    }).onError((error, stackTrace) {
-      debugPrint(error.toString());
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -267,63 +247,64 @@ class _SearchTeamsState extends State<SearchTeams> {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ListTile(
-                leading: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: CircleBorder(),
-                    side: BorderSide(
-                      color: Colors.red,
-                    ),
-                    foregroundColor: Colors.red.shade800,
-                    padding: EdgeInsets.all(10),
-                  ),
-                  child: Icon(
-                    Icons.clear_outlined,
-                    size: 25,
-                  ),
-                  onPressed: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(ClearTeamSelection());
-                  },
-                ),
+                leading: _clearSelectionButton(context),
                 contentPadding: EdgeInsets.zero,
                 minVerticalPadding: 0,
                 title: Text("$selectionCounter selected"),
-                trailing: StoreConnector<AppState, Map<int, bool>>(
-                  converter: (store) => store.state.teamAdded,
-                  builder: (context, teamAdded) => FilledButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(10),
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      size: 25,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            if (teams != null) {
-                              final List<TeamModel> selectedTeams = List.from(
-                                teams!.where(
-                                  (team) => teamAdded[team.id]!,
-                                ),
-                              );
-                              return TeamOverview(
-                                selectedTeams: selectedTeams,
-                              );
-                            } else {
-                              throw "unexpected";
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                trailing: _teamOverviewButton(),
               ),
             ),
+    );
+  }
+
+  Widget _teamOverviewButton() {
+    return StoreConnector<AppState, TeamsNdAddedMembers>(
+      converter: (store) {
+        return TeamsNdAddedMembers(store.state.allTeams, store.state.teamAdded);
+      },
+      builder: (context, teamsNdAdded) => FilledButton(
+        style: ElevatedButton.styleFrom(
+          shape: CircleBorder(),
+          padding: EdgeInsets.all(10),
+        ),
+        child: Icon(
+          Icons.arrow_forward_ios_sharp,
+          size: 25,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                final selectedTeams = teamsNdAdded.addedTeams();
+                return TeamOverview(
+                  selectedTeams: selectedTeams,
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _clearSelectionButton(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        shape: CircleBorder(),
+        side: BorderSide(
+          color: Colors.red,
+        ),
+        foregroundColor: Colors.red.shade800,
+        padding: EdgeInsets.all(10),
+      ),
+      child: Icon(
+        Icons.clear_outlined,
+        size: 25,
+      ),
+      onPressed: () {
+        StoreProvider.of<AppState>(context).dispatch(ClearTeamSelection());
+      },
     );
   }
 }
