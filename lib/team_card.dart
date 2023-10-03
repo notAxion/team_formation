@@ -6,7 +6,8 @@ import 'package:team_formation/redux/app_state.dart';
 
 class TeamCard extends StatelessWidget {
   final TeamModel team;
-  const TeamCard({super.key, required this.team});
+  bool hideAddButton;
+  TeamCard({super.key, required this.team, this.hideAddButton = false});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,9 @@ class TeamCard extends StatelessWidget {
 ${team.gender.sexuality} - ${team.domain.domainName}''',
               ),
             ),
-            _addToTeamButton(context, team, teamAdded[team.id]!),
+            (hideAddButton)
+                ? const SizedBox(height: 8.0)
+                : _addToTeamButton(context, team, teamAdded[team.id]!),
           ],
         ),
       ),
