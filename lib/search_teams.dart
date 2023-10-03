@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:team_formation/models/team_model.dart';
 import 'package:team_formation/models/teams_nd_added_member.dart';
@@ -46,17 +47,34 @@ class SearchTeams extends StatelessWidget {
   Widget _searchBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16.0),
-      child: TextField(
-        onChanged: (value) =>
-            StoreProvider.of<AppState>(context).dispatch(SearchName(value)),
-        controller: editingController,
-        decoration: const InputDecoration(
-          labelText: "Search",
-          hintText: "Search",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+      child: Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          TextField(
+            onChanged: (value) =>
+                StoreProvider.of<AppState>(context).dispatch(SearchName(value)),
+            controller: editingController,
+            decoration: InputDecoration(
+              hintText: "Search",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              ),
+              isDense: true,
+            ),
           ),
-        ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              editingController.clear();
+              StoreProvider.of<AppState>(context).dispatch(SearchName(""));
+              FocusScope.of(context).unfocus();
+            },
+            icon: Icon(
+              Icons.cancel,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+        ],
       ),
     );
   }
