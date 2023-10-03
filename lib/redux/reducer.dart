@@ -3,22 +3,6 @@ import 'package:team_formation/redux/actions.dart';
 import 'package:team_formation/redux/app_state.dart';
 
 AppState appReducer(AppState state, action) {
-  if (action is SearchName) {
-    return state.copyWith(
-      teams: state.allTeams
-          .where(
-            (item) =>
-                item.firstName
-                    .toLowerCase()
-                    .contains(action.query.toLowerCase()) |
-                item.lastName
-                    .toLowerCase()
-                    .contains(action.query.toLowerCase()),
-          )
-          .toList(),
-    );
-  }
-
   if (action is SetTeams) {
     return state.copyWith(
       teams: action.teams,
@@ -27,6 +11,16 @@ AppState appReducer(AppState state, action) {
     );
   }
 
+  if (action is SearchQuery) {
+    final teams = teamsWithAppliedFilter(state.copyWith(
+      searchQuery: action.query,
+    ));
+
+    return state.copyWith(
+      teams: teams,
+      searchQuery: action.query,
+    );
+  }
   if (action is ChangeFilterDomain) {
     final teams = teamsWithAppliedFilter(state.copyWith(
       selectedDomain: action.domain,
@@ -79,11 +73,22 @@ AppState appReducer(AppState state, action) {
 }
 
 List<TeamModel> teamsWithAppliedFilter(AppState state) {
-  List<TeamModel> teams = (state.selectedDomain == Domain.none)
+  List<TeamModel> teams = (state.searchQuery == "")
       ? state.allTeams
       : state.allTeams
-          .where((team) => team.domain == state.selectedDomain)
+          .where(
+            (item) =>
+                item.firstName
+                    .toLowerCase()
+                    .contains(state.searchQuery.toLowerCase()) |
+                item.lastName
+                    .toLowerCase()
+                    .contains(state.searchQuery.toLowerCase()),
+          )
           .toList();
+  teams = (state.selectedDomain == Domain.none)
+      ? teams
+      : teams.where((team) => team.domain == state.selectedDomain).toList();
   teams = (state.selectedGender == Gender.none)
       ? teams
       : teams.where((team) => team.gender == state.selectedGender).toList();

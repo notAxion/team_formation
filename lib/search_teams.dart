@@ -51,8 +51,8 @@ class SearchTeams extends StatelessWidget {
         alignment: Alignment.centerRight,
         children: [
           TextField(
-            onChanged: (value) =>
-                StoreProvider.of<AppState>(context).dispatch(SearchName(value)),
+            onChanged: (value) => StoreProvider.of<AppState>(context)
+                .dispatch(SearchQuery(value)),
             controller: editingController,
             decoration: InputDecoration(
               hintText: "Search",
@@ -66,7 +66,7 @@ class SearchTeams extends StatelessWidget {
             padding: EdgeInsets.zero,
             onPressed: () {
               editingController.clear();
-              StoreProvider.of<AppState>(context).dispatch(SearchName(""));
+              StoreProvider.of<AppState>(context).dispatch(SearchQuery(""));
               FocusScope.of(context).unfocus();
             },
             icon: Icon(

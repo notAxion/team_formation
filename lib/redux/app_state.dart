@@ -7,6 +7,7 @@ class AppState {
   bool availableFilter;
   Map<int, bool> teamAdded;
   int selectionCounter;
+  String searchQuery;
 
   AppState({
     this.teams = const [],
@@ -16,6 +17,7 @@ class AppState {
     this.availableFilter = false,
     this.teamAdded = const <int, bool>{},
     this.selectionCounter = 0,
+    this.searchQuery = "",
   });
 
   AppState copyWith({
@@ -26,6 +28,7 @@ class AppState {
     bool? availableFilter,
     Map<int, bool>? teamAdded,
     int? selectionCounter,
+    String? searchQuery,
   }) {
     return AppState(
       teams: teams ?? this.teams,
@@ -35,6 +38,7 @@ class AppState {
       availableFilter: availableFilter ?? this.availableFilter,
       teamAdded: teamAdded ?? this.teamAdded,
       selectionCounter: selectionCounter ?? this.selectionCounter,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 }

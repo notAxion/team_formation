@@ -1,9 +1,9 @@
 import 'package:team_formation/models/team_model.dart';
 
-class SearchName {
+class SearchQuery {
   final String query;
 
-  SearchName(this.query);
+  SearchQuery(this.query);
 }
 
 class SetTeams {
