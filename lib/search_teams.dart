@@ -181,15 +181,15 @@ class SearchTeams extends StatelessWidget {
             ListTile(
               contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
               isThreeLine: true,
-              leading: Container(
-                margin: EdgeInsets.only(left: 8.0),
-                padding: EdgeInsets.all(13.0),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.indigo,
+              leading: SizedBox.square(
+                dimension: 50,
+                child: Image.network(
+                  team.avatar,
+                  height: 50,
+                  width: 50,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Icon(Icons.person_3_rounded),
                 ),
-                child:
-                    Text(team.gender.sexuality.characters.first.toUpperCase()),
               ),
               selected: teamAdded[team.id]!,
               title: Padding(
@@ -199,7 +199,10 @@ class SearchTeams extends StatelessWidget {
                   textScaleFactor: 1.4,
                 ),
               ),
-              subtitle: Text("${team.email}\n${team.domain.domainName}"),
+              subtitle: Text(
+                '''${team.email}
+${team.gender.sexuality} - ${team.domain.domainName}''',
+              ),
             ),
             _addToTeamButton(context, team, teamAdded[team.id]!),
           ],
