@@ -7,15 +7,11 @@ import 'package:team_formation/redux/app_state.dart';
 import 'package:team_formation/team_overview.dart';
 import 'package:redux/redux.dart';
 
-class SearchTeams extends StatefulWidget {
+class SearchTeams extends StatelessWidget {
   SearchTeams({super.key});
 
-  @override
-  State<SearchTeams> createState() => _SearchTeamsState();
-}
-
-class _SearchTeamsState extends State<SearchTeams> {
   final TextEditingController editingController = TextEditingController();
+
   final _domainController = TextEditingController();
 
   final _genderController = TextEditingController();
@@ -30,7 +26,7 @@ class _SearchTeamsState extends State<SearchTeams> {
         // height: 500.0,
         child: Column(
           children: [
-            _searchBar(),
+            _searchBar(context),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -39,15 +35,15 @@ class _SearchTeamsState extends State<SearchTeams> {
                 Divider(),
               ],
             ),
-            _showTeamList(),
-            _showOnSelection(),
+            _showTeamList(context),
+            _showOnSelection(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _searchBar() {
+  Widget _searchBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: TextField(
@@ -154,21 +150,21 @@ class _SearchTeamsState extends State<SearchTeams> {
     );
   }
 
-  Widget _showTeamList() {
+  Widget _showTeamList(BuildContext context) {
     return StoreConnector<AppState, List<TeamModel>>(
       converter: (store) => store.state.teams,
       builder: (BuildContext context, List<TeamModel> teams) => Expanded(
         child: ListView.builder(
           itemCount: teams.length,
           itemBuilder: (context, index) {
-            return _teamCard(teams[index]);
+            return _teamCard(context, teams[index]);
           },
         ),
       ),
     );
   }
 
-  Widget _teamCard(TeamModel team) {
+  Widget _teamCard(BuildContext context, TeamModel team) {
     return StoreConnector<AppState, Map<int, bool>>(
       converter: (store) => store.state.teamAdded,
       builder: (context, teamAdded) => Card(
@@ -205,14 +201,15 @@ class _SearchTeamsState extends State<SearchTeams> {
               ),
               subtitle: Text("${team.email}\n${team.domain.domainName}"),
             ),
-            _addToTeamButton(team, teamAdded[team.id]!),
+            _addToTeamButton(context, team, teamAdded[team.id]!),
           ],
         ),
       ),
     );
   }
 
-  Widget _addToTeamButton(TeamModel team, bool isSelected) {
+  Widget _addToTeamButton(
+      BuildContext context, TeamModel team, bool isSelected) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       alignment: Alignment.centerRight,
@@ -234,7 +231,7 @@ class _SearchTeamsState extends State<SearchTeams> {
     );
   }
 
-  Widget _showOnSelection() {
+  Widget _showOnSelection(BuildContext context) {
     return StoreConnector<AppState, int>(
       converter: (store) => store.state.selectionCounter,
       builder: (context, selectionCounter) => (selectionCounter < 1)
@@ -242,10 +239,6 @@ class _SearchTeamsState extends State<SearchTeams> {
           : Container(
               margin:
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColor),
-                borderRadius: BorderRadius.circular(30),
-              ),
               child: ListTile(
                 leading: _clearSelectionButton(context),
                 contentPadding: EdgeInsets.zero,
