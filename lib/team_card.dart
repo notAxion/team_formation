@@ -26,6 +26,7 @@ class TeamCard extends StatelessWidget {
           children: [
             ListTile(
               contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              selectedColor: (hideAddButton) ? Colors.white : null,
               isThreeLine: true,
               leading: SizedBox.square(
                 dimension: 50,
