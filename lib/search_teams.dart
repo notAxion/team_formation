@@ -74,16 +74,24 @@ class SearchTeams extends StatelessWidget {
         DropdownMenuEntry(value: gender, label: gender.sexuality),
       );
     }
+    ;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _domainDropDown(domainEntries),
-          _genderDropDown(genderEntries),
-          _availableCheckBox(),
+          limitSize(_domainDropDown(domainEntries)),
+          limitSize(_genderDropDown(genderEntries)),
+          limitSize(_availableCheckBox()),
         ],
       ),
+    );
+  }
+
+  Widget limitSize(Widget? child) {
+    return SizedBox(
+      height: 63,
+      child: child,
     );
   }
 
@@ -92,7 +100,7 @@ class SearchTeams extends StatelessWidget {
       converter: (store) => store.state.selectedDomain,
       builder: (context, selectedDomain) => DropdownMenu<Domain>(
         label: Text("Domain"),
-        width: 150,
+        width: 140,
         enableSearch: false,
         controller: _domainController,
         textStyle: TextStyle(overflow: TextOverflow.ellipsis),
@@ -115,7 +123,7 @@ class SearchTeams extends StatelessWidget {
     return StoreConnector<AppState, Gender>(
       converter: (store) => store.state.selectedGender,
       builder: (context, selectedGender) => DropdownMenu(
-        width: 150,
+        width: 140,
         label: Text("Gender"),
         enableSearch: false,
         controller: _genderController,
@@ -138,14 +146,24 @@ class SearchTeams extends StatelessWidget {
   Widget _availableCheckBox() {
     return StoreConnector<AppState, bool>(
       converter: (store) => store.state.availableFilter,
-      builder: (context, availableFilter) => Checkbox(
-        value: availableFilter,
-        onChanged: (changedAvailableFilter) {
-          if (changedAvailableFilter != null) {
-            StoreProvider.of<AppState>(context)
-                .dispatch(AddAvailableFilter(changedAvailableFilter));
-          }
+      builder: (context, availableFilter) => OutlinedButton(
+        onPressed: () {
+          StoreProvider.of<AppState>(context).dispatch(
+            AddAvailableFilter(!availableFilter),
+          );
         },
+        child: Text("Available"),
+        style: FilledButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          backgroundColor:
+              (availableFilter) ? Theme.of(context).colorScheme.primary : null,
+          foregroundColor: (availableFilter)
+              ? Theme.of(context).colorScheme.onPrimary
+              : Colors.white70,
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+        ),
       ),
     );
   }
